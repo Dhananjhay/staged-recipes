@@ -1,6 +1,6 @@
 {% set name = "nighres" %}
-{% set version = "1.4.0" %}
-{% set ref = "1901ce9a9afdfad8e2d66ec09600fbfb9fa0151d" %}
+{% set version = "1.5.1" %}
+{% set ref = "ea6dd98235e2a62b30768a3107b4365875536f13" %}
 
 package:
   name: {{ name|lower }}
@@ -8,10 +8,10 @@ package:
 
 source:
   url: https://github.com/nighres/nighres/archive/{{ ref }}.tar.gz
-  sha256: 243f9b9e4f970e748ced503c61e120e3407789306102924447267972af10714f
+  sha256: c9f66feb90810b140fe5cd83cee5971104816aa3f9b506e1284e48d1b6035812
 
 build:
-  skip: true  # [py<30]
+  skip: true  # [py<38]
   skip: true  # [win]
   number: 0
 
@@ -19,23 +19,25 @@ requirements:
   build:
     - patchelf
     - {{ compiler('cxx') }}
-    - {{ stdlib("c") }}
     - wget
     - tar
     - wheel
     - jcc
-    - openjdk >=8
+    - openjdk
   host:
     - python
     - pip
+    - jcc
+    - openjdk
   run:
     - python
-    - numpy
-    - nibabel
-    - psutil
-    - antspyx
+    - numpy >=1.22.3
+    - nibabel >=3.2.2
+    - psutil >=5.9.0
+    - antspyx >=0.3.2
+    - dipy >=1.5.0
     - jcc
-    - openjdk >=8
+    - openjdk
 
 test:
   imports:

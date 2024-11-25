@@ -12,5 +12,6 @@ export JCC_JDK="$BUILD_PREFIX"
 # Install with pip
 $PYTHON -m pip install .
 
+# Sets _nighresjava.so to the correct rpath during testing
 patchelf --set-rpath $PREFIX/jre/lib/amd64/server $PREFIX/lib/python3.10/site-packages/nighresjava/_nighresjava.so
 
