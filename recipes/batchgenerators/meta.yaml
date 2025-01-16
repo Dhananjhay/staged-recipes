@@ -1,0 +1,46 @@
+{% set name = "batchgenerators" %}
+{% set version = "0.21" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/batchgenerators-{{ version }}.tar.gz
+  sha256: 7d75e52b709660bca41bdbbeda3758f707a03d254392d2bde3e36f183a559179
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - pillow >=7.1.2
+    - numpy >=1.10.2
+    - scipy
+    - scikit-image
+    - scikit-learn
+    - future
+    - threadpoolctl
+
+test:
+  imports:
+    - batchgenerators
+  requires:
+    - python
+
+about:
+  home: https://github.com/MIC-DKFZ/batchgenerators
+  summary: Data augmentation toolkit
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Dhananjhay
