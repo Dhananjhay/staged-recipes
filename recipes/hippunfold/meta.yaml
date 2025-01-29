@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/khanlab/hippunfold/archive/refs/heads/dev-v2.0.0.zip
-  sha256: b9458eae464a3db8328911f900a0ba61643edbbb6eaac82bdcec48f7187f5b27
+  sha256: a10b518fd6b3f216df0924d0d02714d019fc4687aa6956b646510a3cfdafe5c8
 
 build:
   entry_points: 
@@ -28,7 +28,7 @@ requirements:
     - snakebids >=0.13.1
     - appdirs >=1.4.4,<2.0.0
     - jinja2 >=3.0.3,<4.0.0
-    - pygraphviz 1.7
+    - pygraphviz
     - pygments >=2.10.0,<3.0.0
     - pulp <2.8.0  # [py<311]
     - pandas <=2.0.3  # [py<39]
