@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nnunet_inference_on_cpu_and_gpu-{{ version }}.tar.gz
-  sha256: 71dcff7c5a30223d511cb681cd7b51590832df2afffbb9f6e166e0f711be75d0
+  url: https://github.com/yinglilu/nnUNet/archive/refs/heads/inference_on_cpu_v1.6.6.tar.gz
+  sha256: af59f070bf0b140830053d82ef9cabfd42ee9b080868247769beb463fe427313
 
 build:
   entry_points:
