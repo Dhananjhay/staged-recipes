@@ -38,21 +38,21 @@ requirements:
     - pip
   run:
     - python
-    - pytorch >=1.6.0a
+    - pytorch==1.10.0
     - tqdm
     - dicom2nifti
     - scikit-image >=0.14
     - medpy
-    - scipy
+    - scipy==1.7.1
     - batchgenerators==0.21
-    - numpy
+    - numpy==1.21.2
     - scikit-learn
-    - simpleitk
-    - pandas
+    - simpleitk==2.0.2
+    - pandas >=1.2.0,<=1.3.0
     - requests
-    - nibabel
+    - nibabel >=3.2.1
     - tifffile
-    - matplotlib
+    - matplotlib==3.4.2
 
 test:
   imports:
