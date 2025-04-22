@@ -16,7 +16,7 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          conda-version: "latest"
+          miniconda-version: "latest"
           auto-activate-base: false
 
       - name: Install dependencies
