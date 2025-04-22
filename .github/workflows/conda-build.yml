@@ -3,7 +3,7 @@ name: Build and Upload Conda Package
 on:
   push:
     branches:
-      - main  # or the branch you want to trigger the CI on
+      - djay/add-antspyx  # or the branch you want to trigger the CI on
 
 jobs:
   build:
