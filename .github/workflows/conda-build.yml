@@ -25,9 +25,10 @@ jobs:
 
       - name: Build the package for osx-64
         run: |
+          export MACOSX_DEPLOYMENT_TARGET=10.13
           CONDA_SUBDIR=osx-64 conda build recipes/antspyx -c conda-forge
 
-      - name: Upload package to Khanlabn channel
+      - name: Upload package to Khanlab channel
         run: |
           anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
           # anaconda upload /path/to/conda-package.tar.bz2 --yes
