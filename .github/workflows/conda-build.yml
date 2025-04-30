@@ -46,7 +46,7 @@ jobs:
           set -eux
 
           # 1) build once, skip tests, and emit JSON
-          boa build . \
+          conda mambabuild . \
             -c conda-forge \
             --no-test \
             --json > build.json
