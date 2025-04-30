@@ -1,27 +1,31 @@
-name: Build and Upload Conda Package
+name: Build & Publish antspyx
 
 on:
   push:
     branches:
-      - djay/add-antspyx  # or the branch you want to trigger the CI on
+      - djay/add-antspyx
 
 jobs:
   build:
     runs-on: macOS-13
+    env:
+      # pick up your Anaconda API token for non-interactive upload
+      ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+      # target platform for build
+      CONDA_SUBDIR: osx-64
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache conda build cache
+      - name: Cache conda-bld
         uses: actions/cache@v3
         with:
-          path: /home/runner/miniconda3/conda-bld
-          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipe/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-bld-
+          path: ~/miniforge3/conda-bld
+          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipes/meta.yaml') }}
+          restore-keys: ${{ runner.os }}-conda-bld-
 
-      - name: Setup Miniforge and mamba
+      - name: Setup Miniforge + mamba + boa
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Miniforge3
@@ -30,26 +34,38 @@ jobs:
           use-mamba: true
           conda-solver: libmamba
           auto-activate-base: true
-                    
-      - name: Install dependencies
-        run: |
-          mamba install -y -c conda-forge conda-build anaconda-client boa
-          
-      - name: Build & capture path for osx-64
-        id: build
-        run: |
-          cd recipes
-          OUT=$(conda build . -c conda-forge --output 2>/dev/null)
-          echo "PACKAGE_PATH=$OUT" >> $GITHUB_ENV
-          CONDA_SUBDIR=osx-64 conda mambabuild . -c conda-forge --json > build.json
 
-      - name: Upload package to Khanlab channel
-        shell: bash -l {0}
+      - name: Install build tools
         run: |
-          conda activate base
-          anaconda login \
-            --username ${{ secrets.ANACONDA_USERNAME }} \
-            --password ${{ secrets.ANACONDA_PASSWORD }}
+          mamba install -y -c conda-forge boa anaconda-client jq
+
+      - name: Build & capture path
+        id: build
+        working-directory: recipes
+        run: |
+          set -eux
+
+          # 1) build once, skip tests, and emit JSON
+          boa build . \
+            -c conda-forge \
+            --no-test \
+            --json > build.json
+
+          # 2) peek at the JSON so we know it succeeded
+          cat build.json
+
+          # 3) extract the tar.bz2 path
+          pkg=$(jq -r '.[0].output_file' build.json)
+          echo "::debug::artifact is at $pkg"
+
+          # 4) export to the next step
+          echo "PACKAGE_PATH=$pkg" >> $GITHUB_ENV
+
+      - name: Upload to khanlab
+        run: |
+          # anaconda-client will read $ANACONDA_TOKEN automatically
           anaconda upload "$PACKAGE_PATH" \
-            --label main \
+            --user khanlab \
+            --channel main \
             --force \
+            --quiet
