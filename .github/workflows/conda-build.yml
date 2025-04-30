@@ -13,22 +13,43 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Cache conda build cache
+        uses: actions/cache@v3
         with:
-          miniconda-version: "latest"
-          auto-activate-base: false
+          path: /home/runner/miniconda3/conda-bld
+          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipe/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-bld-
 
+      - name: Setup Miniforge and mamba
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          mamba-version: "*"
+          use-mamba: true
+          conda-solver: libmamba
+          auto-activate-base: true
+                    
       - name: Install dependencies
         run: |
-          conda install -y conda-build anaconda-client
-
-      - name: Build the package for osx-64
+          mamba install -y -c conda-forge conda-build anaconda-client boa
+          
+      - name: Build & capture path for osx-64
+        id: build
         run: |
-          export MACOSX_DEPLOYMENT_TARGET=10.13
-          CONDA_SUBDIR=osx-64 conda build recipes/antspyx -c conda-forge
+          cd recipes
+          OUT=$(conda build . -c conda-forge --output 2>/dev/null)
+          echo "PACKAGE_PATH=$OUT" >> $GITHUB_ENV
+          CONDA_SUBDIR=osx-64 conda mambabuild . -c conda-forge --json > build.json
 
       - name: Upload package to Khanlab channel
+        shell: bash -l {0}
         run: |
-          anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
-          # anaconda upload /path/to/conda-package.tar.bz2 --yes
+          conda activate base
+          anaconda login \
+            --username ${{ secrets.ANACONDA_USERNAME }} \
+            --password ${{ secrets.ANACONDA_PASSWORD }}
+          anaconda upload "$PACKAGE_PATH" \
+            --label main \
+            --force \
