@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/miniforge3/conda-bld
-          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipes/meta.yaml') }}
+          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipes/antspyx/meta.yaml') }}
           restore-keys: ${{ runner.os }}-conda-bld-
 
       - name: Setup Miniforge + mamba + boa
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build & capture path
         id: build
-        working-directory: recipes
+        working-directory: recipes/antspyx
         run: |
           set -eux
 
@@ -49,7 +49,6 @@ jobs:
           conda mambabuild . \
             -c conda-forge \
             --no-test \
-            --json > build.json
 
           # 2) peek at the JSON so we know it succeeded
           cat build.json
