@@ -1,6 +1,6 @@
 {% set name = "connectome-workbench" %}
 {% set version = "2.0.1" %}
-{% set ref = "accc52920a70da5c6b5d4dcfe2477ec1b85312f2" %}
+{% set ref = "a83bb60e84be55038b9cc4f458be1fde10c0e9c6" %}
 
 package:
   name: {{ name }}-split
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/Dhananjhay/workbench/archive/{{ ref }}.tar.gz
-  sha256: 7c2567bbd7347a0ed082ff555c2a0c7dc6e2cbd58546ceebf87380a9789b190d
+  sha256: b0e89e9c039c93e153c5b2558c70a244d7fc07245a1f187fdaedde3140b8f48e
 
 build:
   number: 0
