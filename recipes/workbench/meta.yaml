@@ -18,7 +18,8 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     # - {{ stdlib('c') }}
-    - cmake >=3.0
+    - cmake >=3.0  # [linux]
+    - cmake >=3.5  # [osx]
     - ninja
     - qwt
     # OpenMP
