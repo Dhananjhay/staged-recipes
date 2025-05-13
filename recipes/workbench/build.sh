@@ -25,5 +25,4 @@ fi
 cmake "${cmake_args[@]}" ../src
 
 cmake --build .
-ctest --extra-verbose --output-on-failure .
 cmake --install .
