@@ -42,7 +42,7 @@ jobs:
           export MACOSX_DEPLOYMENT_TARGET=10.13
           OUT=$(CONDA_SUBDIR=osx-64 conda build . -c conda-forge --output 2>/dev/null)
           echo "PACKAGE_PATH=$OUT" >> $GITHUB_ENV
-          CONDA_SUBDIR=osx-64 conda mambabuild . -c conda-forge --no-test
+          CONDA_SUBDIR=osx-64 conda mambabuild . -c conda-forge --no-anaconda-upload
   
       - name: Upload package to Khanlab channel
         shell: bash -l {0}
