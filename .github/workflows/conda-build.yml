@@ -1,0 +1,56 @@
+name: Build and Upload Conda Package
+
+on:
+  push:
+    branches:
+      - djay/add-dev-workbench  # or the branch you want to trigger the CI on
+
+jobs:
+  build:
+    runs-on: macOS-13
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache conda build cache
+        uses: actions/cache@v3
+        with:
+          path: ~/miniconda3/conda-bld
+          key: ${{ runner.os }}-conda-bld-${{ hashFiles('recipes/antspyx/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-bld-
+
+      - name: Setup Miniforge and mamba
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          mamba-version: "*"
+          use-mamba: true
+          conda-solver: libmamba
+          auto-activate-base: true
+
+      - name: Install dependencies
+        run: |
+          mamba install -y -c conda-forge conda-build anaconda-client boa
+
+      - name: Build & capture path for osx-64
+        id: build
+        run: |
+          cd recipes/workbench
+          export MACOSX_DEPLOYMENT_TARGET=10.13
+          OUT=$(CONDA_SUBDIR=osx-64 conda build . -c conda-forge --output 2>/dev/null)
+          echo "PACKAGE_PATH=$OUT" >> $GITHUB_ENV
+          CONDA_SUBDIR=osx-64 conda mambabuild . -c conda-forge --no-test
+  
+      - name: Upload package to Khanlab channel
+        shell: bash -l {0}
+        run: |
+          conda activate base
+          anaconda login \
+            --username ${{ secrets.ANACONDA_USERNAME }} \
+            --password ${{ secrets.ANACONDA_PASSWORD }}
+          anaconda upload "$PACKAGE_PATH" \
+            --label main \
+            --force \
