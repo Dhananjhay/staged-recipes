@@ -7,7 +7,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/Washington-University/workbench/archive/{{ ref }}.tar.gz
+  url: https://github.com/Dhananjhay/workbench/archive/{{ ref }}.tar.gz
   sha256: 4d316ab99f1be8672bb280127ce8325c5553ff780732288b653edd680edf10c9
 
 build:
