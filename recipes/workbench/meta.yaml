@@ -1,4 +1,4 @@
-{% set name = "connectome-workbench" %}
+{% set name = "dev-connectome-workbench" %}
 {% set version = "2.0.1" %}
 {% set ref = "a83bb60e84be55038b9cc4f458be1fde10c0e9c6" %}
 
@@ -53,7 +53,8 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         # - {{ stdlib('c') }}
-        - cmake >=3.0
+        - cmake >=3.0  # [linux]
+        - cmake >=3.5  # [osx]
         - ninja
         - qwt
         # OpenMP
@@ -89,7 +90,7 @@ outputs:
   - name: {{ name }}
     requirements:
       run:
-        - {{ pin_subpackage('connectome-workbench-cli', exact=True) }}
+        - {{ pin_subpackage('dev-connectome-workbench-cli', exact=True) }}
     test:
       commands:
         - wb_command -version
