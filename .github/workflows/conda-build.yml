@@ -48,9 +48,9 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate base
-          anaconda login \ 
+          anaconda login \
             --username ${{ secrets.ANACONDA_USERNAME }} \
             --password ${{ secrets.ANACONDA_PASSWORD }}
-          for pkg in $OUTPUTS; do
-            anaconda upload "$pkg" --label main --force
-          done
+          anaconda upload "$PACKAGE_PATH" \
+            --label main \
+            --force \
