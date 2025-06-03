@@ -1,6 +1,6 @@
 {% set name = "hippunfold" %}
 {% set version = "2.0.0" %}
-{% set ref = "98bdaceb3fefaa0d58f665f8639549c704e6e1a7" %}
+{% set ref = "c09494af2a76e794f3443f508d25c515a5d1dfd2" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/khanlab/hippunfold/archive/{{ ref }}.tar.gz
-  sha256: 39da2038660403667a522df9c7ebbfe48b1734f0f55d98dcd28676c481bb6db0
+  sha256: b2f9d105b7d68c33d4e29c87f425f134ea98a2f8ffe01dbe0edd9ae3a55d6a60
 
 build:
   entry_points: 
