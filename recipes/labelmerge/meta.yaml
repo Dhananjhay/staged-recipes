@@ -25,6 +25,7 @@ requirements:
   run:
     - python >=3.9,<4.0
     - snakebids >=0.14.0
+    - snakemake >=9.0.1
     - appdirs >=1.4.4,<2.0.0
     - pulp <2.8.0  # [py<311]
 
