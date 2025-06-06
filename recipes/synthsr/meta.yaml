@@ -1,6 +1,6 @@
 {% set name = "synthsr" %}
 {% set version = "2.0" %}
-{% set ref = "5d415986d849e98c029b4105f531221a2aa46968" %}
+{% set ref = "2662de27e370e91ab8df8d5fba299e5f5a5234be" %}
 
 package:
   name: {{ name|lower }}
@@ -8,30 +8,30 @@ package:
 
 source:
   url: https://github.com/Dhananjhay/SynthSR/archive/{{ ref }}.tar.gz
-  sha256: e6e1b5e71a3f3fedfd652f288db9cd520c8bbab95a0d8fe5ce7d4700d2ce558a
+  sha256: 0a3c35131561375948ed6976ae26e7c33ea22bd4007ae71ebb2584c1c75355b8
 
 build:
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  skip: true  # [win]
 
 requirements:
   host:
-    - python
+    - python =3.6
+    - pip
+    - setuptools
   run:
-    - python >=3.8,<3.9
+    - python =3.8
     - tensorflow-gpu==2.2.0 
     - keras==2.3.1 
-    - protobuf==3.20.3 
-    - numpy==1.19.5 
-    - nibabel==5.0.1 
-    - matplotlib==3.6.2
+    - numpy<1.20
+    - nibabel
+    - matplotlib
+    - scipy >=1.9.0
 
 test:
   commands:
-    - ls ${SRC_DIR}
-    - python ${SRC_DIR}/work_moved_synthsr-2.0-py_0_noarch/scripts/predict_command_line.py --help
-
+    - python -m SynthSR.scripts.predict_command_line --help
 
 about:
   home: https://github.com/BBillot/SynthSR
