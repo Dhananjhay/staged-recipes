@@ -27,7 +27,7 @@ requirements:
     - numpy<1.20
     - nibabel
     - matplotlib
-    - scipy >=1.9.0
+    - scipy =1.7.1
 
 test:
   commands:
