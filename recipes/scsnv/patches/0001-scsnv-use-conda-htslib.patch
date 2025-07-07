@@ -1,0 +1,181 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dcc00d8..26bcd8e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,25 +11,14 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+ #set(HDF5_USE_STATIC_LIBRARIES ON)
+ 
+-SET( EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/external" )
+-include(ExternalProject)
++# Manually locate HTSlib from Conda environment
++find_path(HTS_INCLUDE htslib/hts.h)
++message(STATUS "HTS_INCLUDE found at ${HTS_INCLUDE}")
++find_library(HTS_LIBRARY NAMES hts)
+ 
+-ExternalProject_Add(htslib
+-    DOWNLOAD_DIR ${EXTERNAL_DIR}
+-    DOWNLOAD_COMMAND curl -k -L https://github.com/samtools/htslib/releases/download/1.19/htslib-1.19.tar.bz2 -o htslib-1.19.tar.bz2 &&
+-        rm -rf htslib && mkdir htslib && tar -xf htslib-1.19.tar.bz2 --strip-components=1 -C htslib && rm htslib-1.19.tar.bz2
+-    SOURCE_DIR ${EXTERNAL_DIR}/htslib
+-    CONFIGURE_COMMAND 
+-         ./configure --disable-libcurl  --without-libdeflate
+-            CC=${CMAKE_C_COMPILER}
+-            CFLAGS=-g\ -Wall\ -O2\ -fvisibility=hidden\ -fPIC ${ARMFLAGS}
+-    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CC=${CMAKE_C_COMPILER}
+-    BUILD_IN_SOURCE 1
+-    INSTALL_COMMAND cmake -E echo "Skipping install step."
+-)
++set(EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/external")
+ 
+-SET( HTS_LIBRARY "${PROJECT_SOURCE_DIR}/external/htslib/libhts.a" )
+-SET( HTS_INCLUDE "${PROJECT_SOURCE_DIR}/external/htslib" )
++include(ExternalProject)
+ 
+ ExternalProject_Add(bwa
+     SOURCE_DIR ${EXTERNAL_DIR}/bwa
+diff --git a/include/align_aux.hpp b/include/align_aux.hpp
+index 395e520..bd54f9f 100644
+--- a/include/align_aux.hpp
++++ b/include/align_aux.hpp
+@@ -29,7 +29,7 @@ SOFTWARE.
+ #include <limits>
+ #include "interval_tree.hpp"
+ #include "bwa/bwamem.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/sam.h"
+ 
+ namespace gwsc {
+ 
+diff --git a/include/bam_genes_aux.hpp b/include/bam_genes_aux.hpp
+index 24226e9..e7453a9 100644
+--- a/include/bam_genes_aux.hpp
++++ b/include/bam_genes_aux.hpp
+@@ -28,8 +28,8 @@ SOFTWARE.
+ #include <iostream>
+ #include <functional>
+ #include <vector>
+-#include "htslib/htslib/hts.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts.h"
++#include "htslib/sam.h"
+ #include "align_aux.hpp"
+ #include "index.hpp"
+ 
+diff --git a/include/collapse_aux.hpp b/include/collapse_aux.hpp
+index 9f272e9..7ad7ba0 100644
+--- a/include/collapse_aux.hpp
++++ b/include/collapse_aux.hpp
+@@ -27,8 +27,8 @@ SOFTWARE.
+ #include <numeric>
+ #include <algorithm>
+ #include <iostream>
+-#include "htslib/htslib/hts.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts.h"
++#include "htslib/sam.h"
+ #include "sequence.hpp"
+ #include "fasta.hpp"
+ #include "bam_genes.hpp"
+diff --git a/include/iprocessor.hpp b/include/iprocessor.hpp
+index b9be4e5..5f4d2e8 100644
+--- a/include/iprocessor.hpp
++++ b/include/iprocessor.hpp
+@@ -22,8 +22,8 @@ SOFTWARE.
+ */
+ 
+ #include "gzstream.hpp"
+-#include "htslib/htslib/hts_endian.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts_endian.h"
++#include "htslib/sam.h"
+ #include "index.hpp"
+ #include "reader.hpp"
+ #include "parallel_hashmap/parallel_hashmap/phmap.h"
+diff --git a/include/sbam_merge.hpp b/include/sbam_merge.hpp
+index 630d349..9270aac 100644
+--- a/include/sbam_merge.hpp
++++ b/include/sbam_merge.hpp
+@@ -29,8 +29,8 @@ SOFTWARE.
+ #include <queue>
+ #include <tuple>
+ #include "misc.hpp"
+-#include "htslib/htslib/hts.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts.h"
++#include "htslib/sam.h"
+ 
+ namespace gwsc{
+ 
+diff --git a/include/sbam_writer.hpp b/include/sbam_writer.hpp
+index ea8fda2..92bc994 100644
+--- a/include/sbam_writer.hpp
++++ b/include/sbam_writer.hpp
+@@ -27,9 +27,9 @@ SOFTWARE.
+ #include <cstdlib>
+ #include <algorithm>
+ #include <cstring>
+-#include "htslib/htslib/hts.h"
+-#include "htslib/htslib/thread_pool.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts.h"
++#include "htslib/thread_pool.h"
++#include "htslib/sam.h"
+ #include <iostream>
+ #include <sstream>
+ #include <thread>
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a72cc43..636cc62 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -8,6 +8,7 @@
+ 
+ #MESSAGE( "BWA LIBRARY: ${BWA_LIBRARY}" )
+ 
++INCLUDE_DIRECTORIES(${HTS_INCLUDE})
+ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include/)
+ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/external/)
+ 
+diff --git a/src/pmap.cpp b/src/pmap.cpp
+index faf289c..1647735 100644
+--- a/src/pmap.cpp
++++ b/src/pmap.cpp
+@@ -30,9 +30,9 @@ SOFTWARE.
+ #include <sys/stat.h>
+ #include "misc.hpp"
+ #include <unistd.h>
+-#include "htslib/htslib/hts.h"
+-#include "htslib/htslib/thread_pool.h"
+-#include "htslib/htslib/sam.h"
++#include "htslib/hts.h"
++#include "htslib/thread_pool.h"
++#include "htslib/sam.h"
+ #include "parallel_hashmap/parallel_hashmap/phmap.h"
+ 
+ using namespace gwsc;
+diff --git a/src/psnvcounts.cpp b/src/psnvcounts.cpp
+index 6e4581b..13b87a7 100644
+--- a/src/psnvcounts.cpp
++++ b/src/psnvcounts.cpp
+@@ -30,7 +30,7 @@ SOFTWARE.
+ #include "tokenizer.hpp"
+ #include "sbam_merge.hpp"
+ #include "gzstream.hpp"
+-#include "htslib/htslib/hts_endian.h"
++#include "htslib/hts_endian.h"
+ 
+ using namespace gwsc;
+ 
+diff --git a/src/rfilter.cpp b/src/rfilter.cpp
+index fa14991..c7dce7a 100644
+--- a/src/rfilter.cpp
++++ b/src/rfilter.cpp
+@@ -8,7 +8,7 @@
+ #include "sbam_merge.hpp"
+ #include "gzstream.hpp"
+ #include "parallel_hashmap/parallel_hashmap/phmap.h"
+-#include "htslib/htslib/hts_endian.h"
++#include "htslib/hts_endian.h"
+ using namespace gwsc;
+ 
+ int main(int argc, char * argv[]){

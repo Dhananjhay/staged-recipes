@@ -1,0 +1,68 @@
+{% set name = "scsnv" %}
+{% set version = "1.1" %}
+{% set ref = "8d7e7a151f369b1eb9a1708e81d370d7a76b3094" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/GWW/scsnv/archive/{{ ref }}.tar.gz
+  sha256: 8cb2a6bc1a6bf6c912e95b05ad537ef089e04615209b1d87879de900c4c4082c
+  patches:
+    - patches/0001-scsnv-use-conda-htslib.patch
+
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  host:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - python
+    - pip
+    - cython
+    - numpy
+    - ncls
+    - hdf5 >=1.12.1,<1.12.2.0a0
+    - htslib
+    - zlib
+    - xz
+  run:
+    - python
+    - numpy
+    - ncls
+    - hdf5 >=1.12.1,<1.12.2.0a0
+    - htslib
+    - matplotlib
+    - scipy
+    - h5py
+    - flammkuchen
+    - tables
+    - cyvcf2
+    - pandas
+    - statsmodels
+    - anndata
+
+
+test:
+  commands:
+    - scsnv -h
+    - scsnvmisc -h
+
+about:
+  home: https://github.com/GWW/scsnv
+  license: MIT license
+  license_file: LICENSE
+  summary: 'A computational tool for analyzing single-cell RNA sequencing (scRNA‑seq) data'
+  description: |
+    scSNV is an alternative to Cell Ranger + velocyto for the alignment, 
+    quantification and SNV calling of 10X Single Cell RNA-seq data. 
+    Currently, scSNV supports 10X 5-prime and 3-prime 10X version 2 and 3 libraries.
+  doc_url: https://github.com/GWW/scsnv/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - Dhananjhay
